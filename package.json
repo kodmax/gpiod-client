@@ -1,6 +1,25 @@
 {
   "dependencies": {
-    "@types/node": "^20.3.1",
     "libgpiod": "^1.2.1"
-  }
+  },
+  "name": "gpio-controller",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@types/node": "^20.3.1"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kodmax/gpio-controller.git"
+  },
+  "keywords": [
+    "gpio"
+  ],
+  "author": "Marcin Malinowski",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/kodmax/gpio-controller/issues"
+  },
+  "homepage": "https://github.com/kodmax/gpio-controller#readme"
 }
