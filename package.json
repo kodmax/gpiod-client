@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "@types/node": "^20.3.1",
-    "libgpiod": "^1.2.0"
+    "libgpiod": "^1.2.1"
   }
 }

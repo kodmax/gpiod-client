@@ -126,7 +126,7 @@ export class GPIOController {
         }
 
         const line = this.getLine(offset)
-        if (lineRequestEvents(line, this.consumerId, 'Both') === StatusSuccess) {
+        if (lineRequestEvents(line, this.consumerId, 'both') === StatusSuccess) {
             const input = new GPIOButtonEvents(line, pressValue, minimumTapTime, () => {
                 this.lineHandlers.delete(offset)
             })
