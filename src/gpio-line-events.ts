@@ -1,8 +1,13 @@
 import { Event, Line, StatusError, StatusEvent, lineEventRead, lineEventWait, lineRelease } from "libgpiod"
 import { GPIOLineReservation } from "./gpio-line-reservation"
 import { EventEmitter } from "stream"
-import { EdgeEvent, EventListener, EventName } from "./events"
 
+export type EdgeEvent = {
+    gpiodEvent: Event
+}
+
+export type EventListener<Event> = (event: Event) => void
+export type EventName = 'edge'
 
 export class GPIOLineEvents extends GPIOLineReservation {
     private interval: ReturnType<typeof setInterval>
@@ -29,14 +34,11 @@ export class GPIOLineEvents extends GPIOLineReservation {
         })
     }
 
-    
-    public addListener(eventName: 'edge', listener: EventListener<EdgeEvent>): void
-    public addListener(eventName: EventName, listener: EventListener<any>): void {
+    public addListener(eventName: 'edge', listener: EventListener<EdgeEvent>): void {
         this.emitter.addListener(eventName, listener)
     }
 
-    public removeListener(eventName: 'edge', listener: EventListener<EdgeEvent>): void
-    public removeListener(eventName: EventName, listener: EventListener<any>): void {
+    public removeListener(eventName: 'edge', listener: EventListener<EdgeEvent>) {
         this.emitter.removeListener(eventName, listener)
     }
 

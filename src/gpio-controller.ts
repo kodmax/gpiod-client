@@ -4,6 +4,7 @@ import { GPIOOutputLine } from './gpio-output-line'
 import { GPIOInputLine } from './gpio-input-line'
 import { GPIOLineReservation } from './gpio-line-reservation'
 import { GPIOLineEvents } from './gpio-line-events'
+import { GPIOButtonEvents } from './gpio-button-events'
 
 export class GPIOController {
     private readonly lineHandlers: Map<Line, GPIOOutputLine | GPIOInputLine | GPIOLineReservation>
@@ -88,7 +89,7 @@ export class GPIOController {
         }
     }
 
-    public requestLineEvents(offset: number, edge: Edge, pollingInterval: number = 10): GPIOLineEvents {
+    public requestLineEvents(offset: number, edge: Edge, pollingInterval: number): GPIOLineEvents {
         const currentHandler = this.lineHandlers.get(offset)
         if (currentHandler) {
             if (currentHandler instanceof GPIOLineEvents) {
@@ -110,6 +111,31 @@ export class GPIOController {
 
         } else {
             throw new GPIOException('Requesting line events failed for line: ' + offset)
+        }
+    }
+
+    public requestButtonEvents(offset: number, pressValue: BitValue = 1, minimumTapTime: number = 0.001): GPIOButtonEvents {
+        const currentHandler = this.lineHandlers.get(offset)
+        if (currentHandler) {
+            if (currentHandler instanceof GPIOButtonEvents) {
+                return currentHandler
+
+            } else {
+                currentHandler.release()
+            }
+        }
+
+        const line = this.getLine(offset)
+        if (lineRequestEvents(line, this.consumerId, 'Both') === StatusSuccess) {
+            const input = new GPIOButtonEvents(line, pressValue, minimumTapTime, () => {
+                this.lineHandlers.delete(offset)
+            })
+
+            this.lineHandlers.set(offset, input)
+            return input
+
+        } else {
+            throw new GPIOException('Requesting button events failed for line: ' + offset)
         }
     }
 
