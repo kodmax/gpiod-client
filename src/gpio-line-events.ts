@@ -17,7 +17,7 @@ export class GPIOLineEvents extends GPIOLineReservation {
         super(line, releaseCallback)
 
         this.interval = setInterval(() => {
-            if (lineEventWait(line, 0, 0) === StatusEvent) {
+            while (lineEventWait(line, 0, 0) === StatusEvent) {
                 const event = lineEventRead(line)
                 if (event !== StatusError) {
                     this.processEvent(event)

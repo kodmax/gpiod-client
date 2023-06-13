@@ -3,7 +3,7 @@
     "libgpiod": "^1.2.1"
   },
   "name": "gpiod-client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "dist/src/index.js",
   "devDependencies": {
     "@types/node": "^20.3.1"
