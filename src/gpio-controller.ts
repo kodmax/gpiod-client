@@ -1,12 +1,13 @@
-import { chipOpenByName, Chip, chipClose, Line, chipGetLine, lineRequestOutput, BitValue, StatusSuccess, lineRequestInput } from 'libgpiod'
+import { chipOpenByName, Chip, chipClose, Line, chipGetLine, lineRequestOutput, BitValue, StatusSuccess, lineRequestInput, lineRequestEvents, Edge } from 'libgpiod'
 import { GPIOException } from './gpio-exception'
 import { GPIOOutputLine } from './gpio-output-line'
 import { GPIOInputLine } from './gpio-input-line'
+import { GPIOLineReservation } from './gpio-line-reservation'
+import { GPIOLineEvents } from './gpio-line-events'
 
 export class GPIOController {
-    private readonly outputLines: Map<Line, GPIOOutputLine> = new Map()
-    private readonly inputLines: Map<Line, GPIOInputLine> = new Map()
-    private readonly lines: Map<number, Line> = new Map()
+    private readonly lineHandlers: Map<Line, GPIOOutputLine | GPIOInputLine | GPIOLineReservation>
+    private readonly lines: Map<number, Line>
     private chip: Chip
 
     public constructor(private readonly chipName: string, private readonly consumerId: string) {
@@ -14,6 +15,9 @@ export class GPIOController {
         if (this.chip === null) {
             throw new GPIOException('GPIO Chip not found')
         }
+
+        this.lineHandlers = new Map()
+        this.lines = new Map()
     }
 
     private getLine(offset: number): Line {
@@ -34,21 +38,23 @@ export class GPIOController {
     }
 
     public requestLineAsOutput(offset: number, initialValue: BitValue): GPIOOutputLine {
-        if (this.outputLines.has(offset)) {
-            return this.outputLines.get(offset)!
-        }
+        const currentHandler = this.lineHandlers.get(offset)
+        if (currentHandler) {
+            if (currentHandler instanceof GPIOOutputLine) {
+                return currentHandler
 
-        if (this.inputLines.has(offset)) {
-            this.inputLines.get(offset)!.release()
+            } else {
+                currentHandler.release()
+            }
         }
 
         const line = this.getLine(offset)
         if (lineRequestOutput(line, this.consumerId, initialValue) === StatusSuccess) {
             const output = new GPIOOutputLine(line, () => {
-                this.outputLines.delete(offset)
+                this.lineHandlers.delete(offset)
             })
 
-            this.outputLines.set(offset, output)
+            this.lineHandlers.set(offset, output)
             return output
 
         } else {
@@ -58,27 +64,53 @@ export class GPIOController {
     }
 
     public requestLineAsInput(offset: number): GPIOInputLine {
-        if (this.inputLines.has(offset)) {
-            return this.inputLines.get(offset)!
-        }
+        const currentHandler = this.lineHandlers.get(offset)
+        if (currentHandler) {
+            if (currentHandler instanceof GPIOInputLine) {
+                return currentHandler
 
-        if (this.outputLines.has(offset)) {
-            this.outputLines.get(offset)!.release()
+            } else {
+                currentHandler.release()
+            }
         }
 
         const line = this.getLine(offset)
         if (lineRequestInput(line, this.consumerId) === StatusSuccess) {
             const input = new GPIOInputLine(line, () => {
-                this.inputLines.delete(offset)
+                this.lineHandlers.delete(offset)
             })
 
-            this.inputLines.set(offset, input)
+            this.lineHandlers.set(offset, input)
             return input
 
         } else {
             throw new GPIOException('Requesting line as input failed for line: ' + offset)
         }
+    }
 
+    public requestLineEvents(offset: number, edge: Edge, pollingInterval: number = 10): GPIOLineEvents {
+        const currentHandler = this.lineHandlers.get(offset)
+        if (currentHandler) {
+            if (currentHandler instanceof GPIOLineEvents) {
+                return currentHandler
+
+            } else {
+                currentHandler.release()
+            }
+        }
+
+        const line = this.getLine(offset)
+        if (lineRequestEvents(line, this.consumerId, edge) === StatusSuccess) {
+            const input = new GPIOLineEvents(line, pollingInterval, () => {
+                this.lineHandlers.delete(offset)
+            })
+
+            this.lineHandlers.set(offset, input)
+            return input
+
+        } else {
+            throw new GPIOException('Requesting line events failed for line: ' + offset)
+        }
     }
 
     public close(): void {

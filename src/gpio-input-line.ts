@@ -1,30 +1,19 @@
-import { BitValue, Line, StatusError, lineGetValue, lineRelease, lineSetValue } from "libgpiod";
-import { GPIOException } from "./gpio-exception";
+import { BitValue, StatusError, lineGetValue } from "libgpiod"
+import { GPIOLineReservation } from "./gpio-line-reservation"
+import { GPIOException } from "./gpio-exception"
 
-export class GPIOInputLine {
-    public constructor(private line: Line, private readonly releaseCallback: () => void) { 
+export class GPIOInputLine extends GPIOLineReservation {
 
-    }
-    
     public getValue(): BitValue {
-        if (this.line) {
-            const value = lineGetValue(this.line)
-            if (value === StatusError) {
-                throw new GPIOException('Line get value failed')
+        this.checkReservation()
 
-            } else {
-                return value
-            }
-    
+        const value = lineGetValue(this.line)
+        if (value === StatusError) {
+            throw new GPIOException('Line get value failed')
+
         } else {
-            throw new GPIOException('Line already released')
+            return value
         }
     }
 
-    public release(): void {
-        this.releaseCallback()
-
-        lineRelease(this.line)
-        this.line = null
-    }
 }
