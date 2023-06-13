@@ -1,0 +1,10 @@
+node_modules
+.eslintrc.json
+.gitignore
+tsconfig.json
+package
+*.tgz
+jest.config.js
+.vscode
+examples
+LICENSE

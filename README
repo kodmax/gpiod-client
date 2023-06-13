@@ -1,0 +1,8 @@
+# PREREQUISITES
+  `sudo apt update`
+  `sudo apt-get install gpiod libgpiod-dev`
+
+
+# SEE ALSO
+  https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/
+  

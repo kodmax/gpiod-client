@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "libgpiod": "^1.2.0"
+  }
+}
