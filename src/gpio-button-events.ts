@@ -34,6 +34,7 @@ export class GPIOButtonEvents extends GPIOLineReservation {
         this.pollInterval = setInterval(() => {
             while (lineEventWait(line, 0, 0) === StatusEvent) {
                 const event = lineEventRead(line)
+                console.log(event)
                 if (event !== StatusError) {
                     this.processEvent(event)
                 }
@@ -60,11 +61,11 @@ export class GPIOButtonEvents extends GPIOLineReservation {
 
     private processEvent(event: Event): void {
         if (event.type === EventTypeRising && this.pressValue === 0 || event.type === EventTypeFalling && this.pressValue === 1) {
-            const holdTime = this.getHoldTime(event.ts)
+            const holdTime = this.getHoldTime(event.sec + event.nsec / 1e9)
             this.lastPressTimestamp = 0
 
             this.emitter.emit('release', {
-                ts: event.ts
+                ts: event.sec + event.nsec / 1e9
             })
 
             if (holdTime > this.minimumTapTime) {
@@ -74,9 +75,9 @@ export class GPIOButtonEvents extends GPIOLineReservation {
             }
 
         } else {
-            this.lastPressTimestamp = event.ts
+            this.lastPressTimestamp = event.sec + event.nsec / 1e9
             this.emitter.emit('press', {
-                ts: event.ts
+                ts: event.sec + event.nsec / 1e9
             })
         }
     }

@@ -4,6 +4,7 @@ import { EventEmitter } from "stream"
 
 export type EdgeEvent = {
     gpiodEvent: Event
+    ts: number
 }
 
 export type EventListener<Event> = (event: Event) => void
@@ -30,8 +31,10 @@ export class GPIOLineEvents extends GPIOLineReservation {
 
     private processEvent(event: Event): void {
         this.emitter.emit('edge', {
+            ts: event.sec + event.nsec / 1e9,
             gpiodEvent: event
         })
+        
     }
 
     public addListener(eventName: 'edge', listener: EventListener<EdgeEvent>): void {
