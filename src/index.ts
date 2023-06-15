@@ -1,2 +1,7 @@
 export * from './gpio-controller'
 export * from './gpio-exception'
+
+export * from './gpio-button-events'
+export * from './gpio-line-events'
+export * from './gpio-output-line'
+export * from './gpio-input-line'
