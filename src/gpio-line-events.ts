@@ -1,6 +1,6 @@
-import { Event, Line, StatusError, StatusEvent, lineEventRead, lineEventWait, lineRelease } from "libgpiod"
-import { GPIOLineReservation } from "./gpio-line-reservation"
-import { EventEmitter } from "stream"
+import { Event, Line, StatusError, StatusEvent, lineEventRead, lineEventWait, lineRelease } from 'libgpiod'
+import { GPIOLineReservation } from './gpio-line-reservation'
+import { EventEmitter } from 'stream'
 
 type LineEdgeEvent = {
     gpiodEvent: Event
@@ -25,7 +25,7 @@ export class GPIOLineEvents extends GPIOLineReservation {
                 }
             }
         }, pollingInterval)
-    
+
         this.emitter = new EventEmitter()
     }
 
@@ -34,7 +34,7 @@ export class GPIOLineEvents extends GPIOLineReservation {
             ts: event.sec + event.nsec / 1e9,
             gpiodEvent: event
         })
-        
+
     }
 
     public addListener(eventName: LineEventName, listener: LineEventListener<LineEdgeEvent>): void {

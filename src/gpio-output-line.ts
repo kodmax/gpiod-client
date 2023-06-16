@@ -1,6 +1,6 @@
-import { BitValue, StatusError, lineSetValue, lineTrigger } from "libgpiod"
-import { GPIOLineReservation } from "./gpio-line-reservation"
-import { GPIOException } from "./gpio-exception"
+import { BitValue, StatusError, lineSetValue, lineTrigger } from 'libgpiod'
+import { GPIOLineReservation } from './gpio-line-reservation'
+import { GPIOException } from './gpio-exception'
 
 export class GPIOOutputLine extends GPIOLineReservation {
 

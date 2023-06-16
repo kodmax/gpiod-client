@@ -114,7 +114,7 @@ export class GPIOController {
         }
     }
 
-    public requestButtonEvents(offset: number, pressValue: BitValue = 1, minimumTapTime: number = 0.001): GPIOButtonEvents {
+    public requestButtonEvents(offset: number, pressValue: BitValue = 1, minimumTapTime = 0.001): GPIOButtonEvents {
         const currentHandler = this.lineHandlers.get(offset)
         if (currentHandler) {
             if (currentHandler instanceof GPIOButtonEvents) {

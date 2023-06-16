@@ -1,13 +1,13 @@
-import { BitValue, Event, EventTypeFalling, EventTypeRising, Line, RisingEdge, StatusError, StatusEvent, lineEventRead, lineEventWait, lineRelease } from "libgpiod"
-import { GPIOLineReservation } from "../gpio-line-reservation"
-import { EventEmitter } from "stream"
-import { ButtonEventListener, ButtonEventName, HoldEvent, PressEvent, ReleaseEvent, TapEvent } from "./events"
+import { BitValue, Event, EventTypeFalling, EventTypeRising, Line, StatusError, StatusEvent, lineEventRead, lineEventWait, lineRelease } from 'libgpiod'
+import { GPIOLineReservation } from '../gpio-line-reservation'
+import { EventEmitter } from 'stream'
+import { ButtonAnyEventListener, ButtonEventListener, ButtonEventName, HoldEvent, PressEvent, ReleaseEvent, TapEvent } from './events'
 
 export class GPIOButtonEvents extends GPIOLineReservation {
     private readonly pollInterval: ReturnType<typeof setInterval>
     private readonly emitter: EventEmitter
 
-    private lastPressTimestamp: number = 0
+    private lastPressTimestamp = 0
 
     public constructor(line: Line, private readonly pressValue: BitValue, private readonly minimumTapTime: number, releaseCallback: () => void) {
         super(line, releaseCallback)
@@ -65,7 +65,7 @@ export class GPIOButtonEvents extends GPIOLineReservation {
     public addListener(eventName: 'press', listener: ButtonEventListener<PressEvent>): void
     public addListener(eventName: 'hold', listener: ButtonEventListener<HoldEvent>): void
     public addListener(eventName: 'tap', listener: ButtonEventListener<TapEvent>): void
-    public addListener(eventName: ButtonEventName, listener: ButtonEventListener<any>): void {
+    public addListener(eventName: ButtonEventName, listener: ButtonAnyEventListener): void {
         this.emitter.addListener(eventName, listener)
     }
 
@@ -73,7 +73,7 @@ export class GPIOButtonEvents extends GPIOLineReservation {
     public removeListener(eventName: 'press', listener: ButtonEventListener<PressEvent>): void
     public removeListener(eventName: 'hold', listener: ButtonEventListener<HoldEvent>): void
     public removeListener(eventName: 'tap', listener: ButtonEventListener<TapEvent>): void
-    public removeListener(eventName: ButtonEventName, listener: ButtonEventListener<any>): void {
+    public removeListener(eventName: ButtonEventName, listener: ButtonAnyEventListener): void {
         this.emitter.removeListener(eventName, listener)
     }
 

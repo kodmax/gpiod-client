@@ -2,7 +2,6 @@ export type ButtonEventName = 'press' | 'release' | 'hold' | 'tap'
 
 export type ButtonEventListener<Event> = (event: Event) => void
 
-
 export type ReleaseEvent = {
     ts: number
 }
@@ -19,3 +18,7 @@ export type TapEvent = {
     duration: number
 }
 
+export type ButtonAnyEventListener = ButtonEventListener<ReleaseEvent>
+| ButtonEventListener<PressEvent>
+| ButtonEventListener<HoldEvent>
+| ButtonEventListener<TapEvent>
