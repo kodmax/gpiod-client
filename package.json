@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "libgpiod": "1.4.1"
+    "libgpiod": "^1.4.2"
   },
   "name": "gpiod-client",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "main": "dist/src/index.js",
   "devDependencies": {
     "@types/node": "^20.3.1",
