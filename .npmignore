@@ -7,5 +7,4 @@ package
 jest.config.js
 .vscode
 examples
-LICENSE
 /src
