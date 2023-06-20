@@ -9,7 +9,7 @@ type LineEdgeEvent = {
 }
 
 type LineEventListener<Event> = (event: Event) => void
-type LineEventName = 'edge'
+type LineEventName = 'edge' | 'rising' | 'falling'
 
 export class GPIOLineEvents extends GPIOLineReservation {
     private interval: ReturnType<typeof setInterval>
