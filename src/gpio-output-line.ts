@@ -6,8 +6,8 @@ export class GPIOOutputLine extends GPIOLineReservation {
 
     /**
      * Set the value and optionally sleep afterward
-     * @param value 
-     * @param uSleep (optional) number of microseconds to sleep after setting the value 
+     * @param value
+     * @param uSleep (optional) number of microseconds to sleep after setting the value
      */
     public setValue(value: BitValue, uSleep?: number): void {
         this.checkReservation()

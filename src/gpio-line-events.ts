@@ -1,4 +1,4 @@
-import { Event, Line, StatusError, StatusEvent, lineEventRead, lineEventWait, lineRelease } from 'libgpiod'
+import { Event, Line, StatusError, StatusEvent, StatusTimeout, lineEventRead, lineEventWait, lineRelease } from 'libgpiod'
 import { GPIOLineReservation } from './gpio-line-reservation'
 import { EventEmitter } from 'stream'
 
@@ -19,26 +19,26 @@ export class GPIOLineEvents extends GPIOLineReservation {
         super(line, releaseCallback)
 
         this.interval = setInterval(() => {
-            while (lineEventWait(line, 0, 0) === StatusEvent) {
-                const event = lineEventRead(line)
-                if (event !== StatusError) {
-                    this.processEvent(event)
-                }
-            }
+            this.clearEvents()
         }, pollingInterval)
 
         this.emitter = new EventEmitter()
     }
 
-    private processEvent(event: Event): void {
-        const ev = {
-            type: event.type === 1 ? 'rising' : 'falling',
-            ts: event.sec + event.nsec / 1e9,
-            gpiodEvent: event
-        }
+    private clearEvents(): void {
+        while (lineEventWait(this.line, 0, 0) === StatusEvent) {
+            const event = lineEventRead(this.line)
+            if (event !== StatusError) {
+                const ev = {
+                    type: event.type === 1 ? 'rising' : 'falling',
+                    ts: event.sec + event.nsec / 1e9,
+                    gpiodEvent: event
+                }
 
-        this.emitter.emit(ev.type, ev)
-        this.emitter.emit('edge', ev)
+                this.emitter.emit(ev.type, ev)
+                this.emitter.emit('edge', ev)
+            }
+        }
     }
 
     public addListener(eventName: LineEventName, listener: LineEventListener<LineEdgeEvent>): void {
@@ -47,6 +47,22 @@ export class GPIOLineEvents extends GPIOLineReservation {
 
     public removeListener(eventName: LineEventName, listener: LineEventListener<LineEdgeEvent>) {
         this.emitter.removeListener(eventName, listener)
+    }
+
+    public wait(ns: number): boolean {
+        this.clearEvents()
+
+        const status = lineEventWait(this.line, 0, ns)
+        switch (status) {
+            case StatusTimeout:
+                return false
+
+            case StatusEvent:
+                return true
+
+            case StatusError:
+                throw new Error('Waiting for line event error')
+        }
     }
 
     public release(): void {
