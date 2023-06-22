@@ -100,8 +100,8 @@ export class GPIOInputLine extends GPIOLineReservation {
         }
     }
 
-    public createDebouncer(timeout: number): Debouncer {
-        return new Debouncer(this.emitter, timeout / 1000)
+    public createDebouncer(timeout: number, pressValue? : BitValue, holdTimes?: number[]): Debouncer {
+        return new Debouncer(this.emitter, timeout / 1000, pressValue, holdTimes)
     }
 
     public release(): void {
