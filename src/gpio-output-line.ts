@@ -1,8 +1,16 @@
-import { BitValue, StatusError, lineSetValue, lineTrigger } from 'libgpiod'
+import { BitValue, Line, StatusError, lineSetValue, lineTrigger } from 'libgpiod'
 import { GPIOLineReservation } from './gpio-line-reservation'
-import { GPIOException } from './gpio-exception'
+import { GPIOException, gpioExceptions } from './gpio-exception'
 
 export class GPIOOutputLine extends GPIOLineReservation {
+
+    private lastValue: BitValue
+
+    public constructor(line: Line, initialValue: BitValue, releaseCallback: () => void) {
+        super(line, releaseCallback)
+
+        this.lastValue = initialValue
+    }
 
     /**
      * Set the value and optionally sleep afterward
@@ -13,8 +21,14 @@ export class GPIOOutputLine extends GPIOLineReservation {
         this.checkReservation()
 
         if (lineSetValue(this.line, value, uSleep) === StatusError) {
-            throw new GPIOException('Line set value failed')
+            throw new GPIOException(gpioExceptions.E_LINE_SET_VALUE)
         }
+
+        this.lastValue = value
+    }
+
+    public getLastSetValue(): BitValue {
+        return this.lastValue
     }
 
     /**

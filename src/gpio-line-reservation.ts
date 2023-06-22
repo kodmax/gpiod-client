@@ -1,5 +1,5 @@
 import { Line, lineRelease } from 'libgpiod'
-import { GPIOException } from './gpio-exception'
+import { GPIOException, gpioExceptions } from './gpio-exception'
 
 export abstract class GPIOLineReservation {
 
@@ -7,7 +7,7 @@ export abstract class GPIOLineReservation {
 
     protected checkReservation(): void {
         if (!this.line) {
-            throw new GPIOException('Line already released')
+            throw new GPIOException(gpioExceptions.E_LINE_NOT_RESERVED)
         }
     }
 
