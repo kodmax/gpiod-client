@@ -1,9 +1,9 @@
 import { BitValue, Event, Line, StatusError, StatusEvent, StatusTimeout, lineEventRead, lineEventWait, lineGetValue, lineRelease } from 'libgpiod'
-import { GPIOLineReservation } from './gpio-line-reservation'
-import { EventEmitter } from 'stream'
+import { LineEvent, EventListener, EventType } from './events'
 import { GPIOException, gpioExceptions } from './gpio-exception'
-import { LineEdgeEvent, LineEventListener, LineEventType } from './line-events'
-
+import { GPIOLineReservation } from './gpio-line-reservation'
+import { EventEmitter } from 'events'
+import { Debouncer } from './debouncer'
 
 export class GPIOInputLine extends GPIOLineReservation {
     private interval?: ReturnType<typeof setInterval>
@@ -41,17 +41,19 @@ export class GPIOInputLine extends GPIOLineReservation {
                 this.propagateEvent(event)
             }
         }
+
+        this.emitter.emit('read-events')
     }
 
-    public addListener(eventName: LineEventType, listener: LineEventListener<LineEdgeEvent>): void {
+    public addListener(eventName: EventType, listener: EventListener<LineEvent>): void {
         this.emitter.addListener(eventName, listener)
     }
 
-    public removeListener(eventName: LineEventType, listener: LineEventListener<LineEdgeEvent>) {
+    public removeListener(eventName: EventType, listener: EventListener<LineEvent>) {
         this.emitter.removeListener(eventName, listener)
     }
 
-    public once(eventName: LineEventType, listener: LineEventListener<LineEdgeEvent>) {
+    public once(eventName: EventType, listener: EventListener<LineEvent>) {
         this.emitter.once(eventName, listener)
     }
 
@@ -96,6 +98,10 @@ export class GPIOInputLine extends GPIOLineReservation {
         } else {
             return value
         }
+    }
+
+    public createDebouncer(timeout: number): Debouncer {
+        return new Debouncer(this.emitter, timeout / 1000)
     }
 
     public release(): void {
