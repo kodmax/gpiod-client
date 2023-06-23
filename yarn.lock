@@ -654,10 +654,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libgpiod@^1.5.5:
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/libgpiod/-/libgpiod-1.5.5.tgz#0fddc288b2a56170751500af213aaa540573e09a"
-  integrity sha512-8zY4t4vpdzAAIbnOdIStxM618uUu5WfCCZnPbZDFAPOUvIH//OFI0qLX+2NU+AL4bPk56FLyoFzqb87dmpZfEQ==
+libgpiod@^1.5.7:
+  version "1.5.8"
+  resolved "https://registry.yarnpkg.com/libgpiod/-/libgpiod-1.5.8.tgz#6815fbbb3851694401839f9f707689232096d747"
+  integrity sha512-E1wRE4bFN3UthPifaljEZbBBtaI5lY4J7L83xo9moPfEqaS73c1snrUkThiu0Sszu0lRn61vYbXw2ZGqUcwBiQ==
   dependencies:
     bindings "~1.5.0"
     nan "~2.17.0"
